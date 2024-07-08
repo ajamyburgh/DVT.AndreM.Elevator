@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVT.AndreM.Elevator", "DVT.AndreM.Elevator\DVT.AndreM.Elevator.csproj", "{EBE05AC7-1564-43E4-94FC-C2AB1ABA5387}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DVT.AndreM.Elevator.Tests", "DVT.AndreM.Elevator.Tests\DVT.AndreM.Elevator.Tests.csproj", "{FDD413C3-2584-45C0-8601-9F1A2D71864C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBE05AC7-1564-43E4-94FC-C2AB1ABA5387}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBE05AC7-1564-43E4-94FC-C2AB1ABA5387}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBE05AC7-1564-43E4-94FC-C2AB1ABA5387}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBE05AC7-1564-43E4-94FC-C2AB1ABA5387}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDD413C3-2584-45C0-8601-9F1A2D71864C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDD413C3-2584-45C0-8601-9F1A2D71864C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDD413C3-2584-45C0-8601-9F1A2D71864C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDD413C3-2584-45C0-8601-9F1A2D71864C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {39EBD75B-6CF7-4DE2-8520-26C015FDD71F}
+	EndGlobalSection
+EndGlobal

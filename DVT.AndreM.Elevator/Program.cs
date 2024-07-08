@@ -8,9 +8,16 @@ Console.WriteLine("(Hack the Program.cs to Initialize a different Elevator simul
 Console.WriteLine("Any key to start");
 Console.ReadLine();
 
-var token = new CancellationTokenSource().Token;
+var tokenS = new CancellationTokenSource();
+var token = tokenS.Token;
 var sim = new Simulator();
+
 await sim.Start(token);
+await sim.Inject(token);
+
+tokenS.Cancel();
+
+sim.StopSimulation();
 
 Console.WriteLine("---------------------");
 Console.WriteLine("Simulation completed!");

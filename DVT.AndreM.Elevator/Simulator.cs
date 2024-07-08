@@ -18,6 +18,8 @@ namespace DVT.AndreM.Elevator
         private int _maxFloor = 5;
         private int _elevatorMaxOccupancy = 5;
         private string _currentMovement;
+        private static Progress<ElevatorProgress> _progressIndicator;
+        private static System.Threading.Timer _stateTimer;
 
         internal Simulator()
         {
@@ -25,7 +27,8 @@ namespace DVT.AndreM.Elevator
             int minFloor = -1;
             int maxFloor = 5;
             int elevatorMaxOccupancy = 5;
-            
+            _progressIndicator = new Progress<ElevatorProgress>(ReportProgress);
+            _stateTimer = new System.Threading.Timer(RedrawTable, new AutoResetEvent(false), 0, 1000);
             _elevatorManager = new ElevatorManager(elevatorCount, minFloor, maxFloor, elevatorMaxOccupancy);
         }
 
@@ -60,31 +63,34 @@ namespace DVT.AndreM.Elevator
                         moveElevators.Add(nearestElevator);                        
                     }
                 }
-            }
-
-            var stateTimer = new System.Threading.Timer(RedrawTable, new AutoResetEvent(false), 0, 1000);
+            }            
             
-
             //Start move all:
             foreach (var elevator in moveElevators)
             {
-                var progressIndicator = new Progress<ElevatorProgress>(ReportProgress);
-                var moveTask = _elevatorManager.MoveToFloorAsync(elevator, elevator.DestinationFloor.Value, progressIndicator, cancellationToken);
+                
+                var moveTask = _elevatorManager.MoveToFloorAsync(elevator, elevator.DestinationFloor.Value, _progressIndicator, cancellationToken);
                 tasks.Add(moveTask);
             }
 
             //StartMoving
-            await Task.WhenAll(tasks);
-
-            await Task.Delay(1000);
-
-            stateTimer.Dispose();
+            //await Task.WhenAll(tasks);
+            //Hacking in an extra move before the last one completed
+            await Task.WhenAny(tasks);
+                        
+            await Task.Delay(2000);            
         }
+
 
         private void ReportProgress(ElevatorProgress currentProgress)
         {
             Debug.WriteLine(currentProgress.movement);
-            
+            _currentMovement = currentProgress.movement;
+        }
+
+        internal void StopSimulation()
+        {
+            _stateTimer.Dispose();
         }
 
         private void RedrawTable(object source)
@@ -124,6 +130,7 @@ namespace DVT.AndreM.Elevator
             Console.Clear();
             dataGrid.Display();
 
+            Console.WriteLine($"Last movement: {_currentMovement}");
             Console.WriteLine();
             DataGrid dataGridLegend = new DataGrid("Legend");
             dataGridLegend.DisplayBorderBetweenRows = true;
@@ -134,7 +141,19 @@ namespace DVT.AndreM.Elevator
             dataGridLegend.Rows.Add("| 3 |", "Open elevator with 3 occupants");
             dataGridLegend.Rows.Add("X 1 X", "Closed elevator with 1 occupant");
             dataGridLegend.Display();
-            Console.ReadLine();
+            //Console.ReadLine();
+        }
+
+        internal async Task Inject(CancellationToken token)
+        {
+            //Some new people arrived:
+            int destFloor = 0;
+            _elevatorManager.SetPeopleWaiting(floorNumber: destFloor, peopleCount: 1);
+            Elevator elevator = _elevatorManager.NearestElevator(destFloor);
+            if (elevator != null) 
+                await _elevatorManager.MoveToFloorAsync(elevator, destFloor, _progressIndicator, token);
+
+            await Task.Delay(2000);
         }
     }
 }

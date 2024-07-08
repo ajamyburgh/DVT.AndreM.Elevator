@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace DVT.AndreM.Elevator
 {
@@ -118,12 +119,17 @@ namespace DVT.AndreM.Elevator
             //      i.e. elevators only have a destination and no scheduled stops along a route.
 
             var nearestQ = _elevators.Values.Where(e => !e.DestinationFloor.HasValue
-                                                    && !e.IsMoving
-                                                    && !e.OccupancyLimitReached);
-            var nearest = nearestQ.Where(e => e.AvailableOccupancy >= _floors[floorNumber])
-                                    .OrderBy(e => Math.Abs(e.CurrentFloor - floorNumber)).FirstOrDefault();
+                                                    && !e.IsMoving);
 
-            if (nearest == null)
+            var nearest = nearestQ.Where(e => !e.OccupancyLimitReached
+                                                    && e.AvailableOccupancy >= _floors[floorNumber])
+                                    .OrderBy(e => Math.Abs(e.CurrentFloor - floorNumber)).FirstOrDefault(); //Space for all
+
+            if (nearest == null) //Not Full
+                nearest = nearestQ.Where(e => !e.OccupancyLimitReached)
+                                    .OrderBy(e => Math.Abs(e.CurrentFloor - floorNumber)).FirstOrDefault(); 
+
+            if (nearest == null) //Even if Full
                 nearest = nearestQ.OrderBy(e => Math.Abs(e.CurrentFloor - floorNumber)).FirstOrDefault();
 
             return nearest;
@@ -161,6 +167,13 @@ namespace DVT.AndreM.Elevator
 
             await elevator.OpenDoorAsync();
             await LoadElevatorAsync(elevator);
+            var progress = new ElevatorProgress()
+            {
+                currentFloor = elevator.CurrentFloor,
+                elevatorName = elevator.Name,
+                movement = $"{elevator.Name} at {HelperStatic.FloorName(destinationFloor)}. Stopped and door opened. Loaded to {elevator.CurrentOccupancy} person capacity."
+            };
+            progressFloor?.Report(progress);
 
             return new ElevatorTaskResult(true, $"{elevator.Name} at {HelperStatic.FloorName(destinationFloor)}. Stopped and door opened. Loaded to {elevator.CurrentOccupancy} person capacity.");
 

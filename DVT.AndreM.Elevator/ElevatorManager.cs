@@ -130,7 +130,7 @@ namespace DVT.AndreM.Elevator
         }
 
         /// <summary>
-        /// Stop, close door, moves elevator to destination floor, stop, opens door and load awaiting passangers.
+        /// Stop, close door, moves elevator to destination floor, stop, opens door and load awaiting passengers.
         /// ToDo: Refactor this crude implementation
         /// </summary>
         /// <param name="destinationFloor">Floor to go to</param>
@@ -167,7 +167,7 @@ namespace DVT.AndreM.Elevator
         }
 
         /// <summary>
-        /// Load passangers. Assume it will fill to capacity with all awaiting people (and nobody gets off ??)
+        /// Load passengers. Assume it will fill to capacity with all awaiting people (and nobody gets off ??)
         /// </summary>
         public async Task<bool> LoadElevatorAsync(Elevator elevator)
         {
@@ -181,9 +181,9 @@ namespace DVT.AndreM.Elevator
             //Simulate pickup delay:
             await Task.Delay(_secondsPickup * 1000);
             //Assumption: fill to capacity
-            int newPassangers = Math.Min(floorWaiting, elevator.AvailableOccupancy);
-            elevator.CurrentOccupancy += newPassangers;
-            _floors[elevator.CurrentFloor] -= newPassangers;
+            int newPassengers = Math.Min(floorWaiting, elevator.AvailableOccupancy);
+            elevator.CurrentOccupancy += newPassengers;
+            _floors[elevator.CurrentFloor] -= newPassengers;
 
             return true;
         }        

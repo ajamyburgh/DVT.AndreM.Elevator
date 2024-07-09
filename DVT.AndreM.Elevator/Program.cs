@@ -8,6 +8,8 @@ Console.WriteLine("(Hack the Simulator.cs ctor or Start code initialize a differ
 Console.WriteLine("Any key to start");
 Console.ReadLine();
 
+Console.CursorVisible = false;
+
 var tokenS = new CancellationTokenSource();
 var token = tokenS.Token;
 var sim = new Simulator();
@@ -22,6 +24,8 @@ sim.StopSimulation();
 Console.WriteLine("---------------------");
 Console.WriteLine("Simulation completed!");
 Console.WriteLine("---------------------");
+
+Console.CursorVisible = true;
 
 
 

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Collections.Concurrent;
 
 namespace DVT.AndreM.Elevator
 {
@@ -18,7 +19,7 @@ namespace DVT.AndreM.Elevator
         private int _minFloor = -1;
         private int _maxFloor = 5;
         private int _elevatorMaxOccupancy = 5;
-        private List<string> _movements;
+        private static List<string> _movements = new List<string>();
         private static Progress<ElevatorProgress> _progressIndicator;
         private static System.Threading.Timer _stateTimer;
 
@@ -31,7 +32,6 @@ namespace DVT.AndreM.Elevator
             _progressIndicator = new Progress<ElevatorProgress>(ReportProgress);
             _stateTimer = new System.Threading.Timer(RedrawTable, new AutoResetEvent(false), 0, 1000);
             _elevatorManager = new ElevatorManager(elevatorCount, minFloor, maxFloor, elevatorMaxOccupancy);
-            _movements = new List<string>();
             _movements.Add($"{NowString()} - Starting simulation");
         }
 

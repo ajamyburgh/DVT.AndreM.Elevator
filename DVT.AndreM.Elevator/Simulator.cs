@@ -1,4 +1,5 @@
 ﻿using DustInTheWind.ConsoleTools.Controls.Tables;
+using DustInTheWind.ConsoleTools.Controls;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,7 +18,7 @@ namespace DVT.AndreM.Elevator
         private int _minFloor = -1;
         private int _maxFloor = 5;
         private int _elevatorMaxOccupancy = 5;
-        private string _currentMovement;
+        private List<string> _movements;
         private static Progress<ElevatorProgress> _progressIndicator;
         private static System.Threading.Timer _stateTimer;
 
@@ -30,6 +31,13 @@ namespace DVT.AndreM.Elevator
             _progressIndicator = new Progress<ElevatorProgress>(ReportProgress);
             _stateTimer = new System.Threading.Timer(RedrawTable, new AutoResetEvent(false), 0, 1000);
             _elevatorManager = new ElevatorManager(elevatorCount, minFloor, maxFloor, elevatorMaxOccupancy);
+            _movements = new List<string>();
+            _movements.Add($"{NowString()} - Starting simulation");
+        }
+
+        private string NowString()
+        {
+            return DateTime.Now.ToString("HH:mm:ss.f");
         }
 
         internal async Task Start(CancellationToken cancellationToken)
@@ -85,7 +93,7 @@ namespace DVT.AndreM.Elevator
         private void ReportProgress(ElevatorProgress currentProgress)
         {
             Debug.WriteLine(currentProgress.movement);
-            _currentMovement = currentProgress.movement;
+            _movements.Add($"{NowString()} - {currentProgress.movement}"); ;
         }
 
         internal void StopSimulation()
@@ -95,8 +103,10 @@ namespace DVT.AndreM.Elevator
 
         private void RedrawTable(object source)
         {
-            //Redraw grid:
-            //Console.WriteLine("Starting...");
+            //Redraw entire window:
+            Console.Clear();
+            Console.WriteLine("\x1b[3J");
+            Console.SetCursorPosition(0, 0);
 
             DataGrid dataGrid = new DataGrid("Elevator by André Myburgh");
             dataGrid.DisplayBorderBetweenRows = true;
@@ -120,17 +130,24 @@ namespace DVT.AndreM.Elevator
                 foreach (var e in _elevatorManager.Elevators.Values)
                 {
                     string doorSymbol = e.DoorStatus == DoorState.Open ? "|" : "X";
-                    cells.Add(e.CurrentFloor == f ? $"{doorSymbol} {e.CurrentOccupancy} {doorSymbol}" : string.Empty);
+                    string cellText = e.CurrentFloor == f ? $"{doorSymbol} {e.CurrentOccupancy} {doorSymbol}" : string.Empty;
+                    ContentCell cell = new ContentCell(cellText);
+                    cell.HorizontalAlignment = HorizontalAlignment.Center;
+                    cells.Add(cell);
                 }
                 cells.Add(waiting.ToString());
 
                 dataGrid.Rows.Add(cells);
             }
 
-            Console.Clear();
             dataGrid.Display();
 
-            Console.WriteLine($"Last movement: {_currentMovement}");
+            Console.WriteLine($"Last movement:");
+            var reversed = _movements.AsEnumerable().Reverse();
+            foreach (var movement in reversed)
+            {
+                Console.WriteLine(movement);
+            }
             Console.WriteLine();
             DataGrid dataGridLegend = new DataGrid("Legend");
             dataGridLegend.DisplayBorderBetweenRows = true;
@@ -142,6 +159,9 @@ namespace DVT.AndreM.Elevator
             dataGridLegend.Rows.Add("X 1 X", "Closed elevator with 1 occupant");
             dataGridLegend.Display();
             //Console.ReadLine();
+
+            //Console.SetCursorPosition(0, 0);
+            Console.SetWindowPosition(0, 0);
         }
 
         internal async Task Inject(CancellationToken token)

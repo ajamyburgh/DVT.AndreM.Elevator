@@ -4,7 +4,7 @@ using DVT.AndreM.Elevator;
 using static System.Net.Mime.MediaTypeNames;
 
 Console.WriteLine("Elevator by André Myburgh");
-Console.WriteLine("(Hack the Program.cs to Initialize a different Elevator simulation)");
+Console.WriteLine("(Hack the Simulator.cs ctor or Start code initialize a different Elevator simulation.)");
 Console.WriteLine("Any key to start");
 Console.ReadLine();
 
